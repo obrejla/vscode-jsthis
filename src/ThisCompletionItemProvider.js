@@ -7,6 +7,7 @@ var utils = require('./Utils');
 var CompletionItem = vscode.CompletionItem;
 var CompletionList = vscode.CompletionList;
 var CompletionItemKind = vscode.CompletionItemKind;
+var Range = vscode.Range;
 
 var ASSIGNMENT_EXPRESSION = 'AssignmentExpression';
 var CALL_EXPRESSION = 'CallExpression';
@@ -26,10 +27,11 @@ var processedLabels = [];
 var includeSelfItems = false;
 
 function shouldComplete(document, position) {
-    var currentWordRange = document.getWordRangeAtPosition(position);
-    var previousWordDiffOffset = currentWordRange ? (position.character - currentWordRange.start.character + 1) * -1 : -1;
-    var previousWord = document.getText(document.getWordRangeAtPosition(position.translate(0, previousWordDiffOffset)));
-    return previousWord === THIS || alsoThisVars.indexOf(previousWord) !== -1;
+    var thisVars = alsoThisVars.slice();
+    thisVars.push(THIS);
+    var regExp = new RegExp('\\W+(' + thisVars.join('|') + ')\\.\\s*\\w*$');
+    var splittedText = document.getText(new Range(0, 0, position.line, position.character));
+    return splittedText.match(regExp);
 }
 
 function prepareCompletionItems(document) {
