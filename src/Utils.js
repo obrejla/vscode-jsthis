@@ -17,8 +17,8 @@ function resolveAst(text) {
     return result;
 }
 
-function loadSyntaxTree(event) {
-    var document = event.document;
+function loadSyntaxTree(document) {
+    lastValidSyntaxTree = null;
     if (document.languageId === JAVASCRIPT_LANGUAGE_ID) {
         resolveAst(document.getText());
     }

@@ -8,7 +8,9 @@ function activate(context) {
 
     context.subscriptions.push(vscode.languages.registerCompletionItemProvider(utils.JAVASCRIPT_LANGUAGE_ID, thisCompletionItemProvider));
 
-    vscode.window.onDidChangeActiveTextEditor(utils.loadSyntaxTree, null, context.subscriptions);
+    vscode.window.onDidChangeActiveTextEditor(function (event) {
+        utils.loadSyntaxTree(event.document);
+    }, null, context.subscriptions);
 
     var editor = vscode.window.activeTextEditor;
     if (editor) {
