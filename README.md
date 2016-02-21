@@ -1,13 +1,31 @@
-# README
-## This is the README for your extension "jsthis"
-You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
+# Better IntelliSense for JavaScript "this" keyword
 
-* Split the editor (`Cmd+\` on OSX or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on OSX or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (OSX) to see a list of Markdown snippets
+[![Build Status](https://travis-ci.org/obrejla/vscode-jsthis.svg?branch=master)](https://travis-ci.org/obrejla/vscode-jsthis)
 
-### For more information
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+This extension adds a better IntelliSense of the "this" keyword in JavaScript files. It tries to collect all `this.<property>` usages, assignments to a `prototype` property and then suggest them in the IntelliSense popup.
 
-** Enjoy!**
+For simplicity no context resolving is applied, all `this` usages are considered to be of one object.
+
+You can also define an extra variable names to be treated the same way (e.g. `self`, `that`, etc.) in options.
+
+## IDE Feature
+
+![IntelliSense - Code Completion](http://s7.postimg.org/v6m1n9juj/vscode_jsthis_example.png)
+
+## Using
+
+You will need to install [Visual Studio Code](https://code.visualstudio.com/) `0.10`. In the command palette select `Install Extension` and choose `JsThis`.
+
+### Options
+
+The following Visual Studio Code settings are available for the JsThis extension.  These can be set in user preferences or workspace settings (`.vscode/settings.json`).
+
+```javascript
+{
+	"jsthis.thisVarNames": ["self"]
+}
+```
+
+## License
+
+[MIT](LICENSE)
