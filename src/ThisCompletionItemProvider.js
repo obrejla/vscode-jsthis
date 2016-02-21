@@ -137,6 +137,9 @@ module.exports = {
 
         if (shouldComplete(document, position)) {
             prepareCompletionItems(document);
+        } else {
+            // try to reload cached AST
+            utils.loadSyntaxTree(document);
         }
 
         return new CompletionList(completionItems, false);
