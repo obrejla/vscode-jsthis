@@ -144,6 +144,6 @@ module.exports = {
             utils.loadSyntaxTree(document);
         }
 
-        return new CompletionList(completionItems, false);
+        return completionItems;
     }
 };

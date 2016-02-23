@@ -86,7 +86,7 @@ suite('Test ThisCompletionItemProvider', function () {
         var fileUri = vscode.Uri.file(__dirname + '/fixtures/completion/' + file);
         var translatedPosition = new vscode.Position(position.line - 1, position.column - 1);
         vscode.workspace.openTextDocument(fileUri).then(function (textDocument) {
-            var completionItems = thisCompletionItemProvider.provideCompletionItems(textDocument, translatedPosition, null).items;
+            var completionItems = thisCompletionItemProvider.provideCompletionItems(textDocument, translatedPosition, null);
             checkItems(completionItems, expectedItems);
         }, function (error) {
             assert.ok(false, `Error: ${error}`);
