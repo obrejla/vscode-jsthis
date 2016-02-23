@@ -13,7 +13,7 @@
         "url": "https://github.com/obrejla/vscode-jsthis.git"
     },
     "engines": {
-        "vscode": "^0.10.7"
+        "vscode": "0.10.x"
     },
     "categories": [
         "Languages"
