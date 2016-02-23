@@ -26,6 +26,26 @@ var selfCompletionItems = [];
 var processedLabels = [];
 var includeSelfItems = false;
 
+function isPrototype(node) {
+    return node.object.type === MEMBER_EXPRESSION && node.object.property.type === IDENTIFIER
+                && node.object.property.name === PROTOTYPE;
+}
+
+function isThisOrThisAlias(node) {
+    return node.object.type === THIS_EXPRESSION || (node.object.type === IDENTIFIER && alsoThisVars.indexOf(node.object.name) !== -1);
+}
+
+function addCompletionItem(label, kind, insertText) {
+    var completionItem;
+    if (label && processedLabels.indexOf(label) === -1) {
+        processedLabels.push(label);
+        completionItem = new CompletionItem(label);
+        completionItem.kind = kind;
+        completionItem.insertText = insertText;
+        completionItems.push(completionItem);
+    }
+}
+
 function shouldComplete(document, position) {
     var thisVars = alsoThisVars.slice();
     thisVars.push(THIS);
@@ -60,49 +80,31 @@ function processVariableDeclarator(node) {
 }
 
 function processAssignmentExpression(node) {
-    if (node.left.type === MEMBER_EXPRESSION && node.left.object.type === MEMBER_EXPRESSION && node.left.object.property.type === IDENTIFIER
-            && node.left.object.property.name === PROTOTYPE) {
-        var label = node.left.property.name;
-        var insertText = label;
-        var kind = CompletionItemKind.Field;
-        if (node.right.type === IDENTIFIER) {
-            kind = resolveTypeOfProperty(label);
-        } else if (node.right.type === FUNCTION_EXPRESSION) {
-            insertText = node.left.property.name + CALLABLE_SUFFIX;
-            kind = CompletionItemKind.Method;
+    if (node.left.type === MEMBER_EXPRESSION) {
+        var label;
+        if (isPrototype(node.left)) {
+            label = node.left.property.name;
+            var insertText = label;
+            var kind = CompletionItemKind.Field;
+            if (node.right.type === IDENTIFIER) {
+                kind = resolveTypeOfProperty(label);
+            } else if (node.right.type === FUNCTION_EXPRESSION) {
+                insertText = node.left.property.name + CALLABLE_SUFFIX;
+                kind = CompletionItemKind.Method;
+            }
+            addCompletionItem(label, kind, insertText);
+        } else if (isThisOrThisAlias(node.left) && node.right.type === FUNCTION_EXPRESSION) {
+            label = node.left.property.name;
+            addCompletionItem(label, CompletionItemKind.Method, label + CALLABLE_SUFFIX);
         }
-        var completionItem = new CompletionItem(label);
-        completionItem.kind = kind;
-        completionItem.insertText = insertText;
-        completionItems.push(completionItem);
     }
 }
 
 function processMemberExpression(node, parent) {
-    if (node.computed === false && node.property.type === IDENTIFIER) {
-        var completionItem = null;
-        if (node.object.type === THIS_EXPRESSION) {
-            completionItem = createCompletionItem(node, parent);
-            if (completionItem) {
-                completionItems.push(completionItem);
-            }
-        } else if (node.object.type === IDENTIFIER && alsoThisVars.indexOf(node.object.name) !== -1) {
-            completionItem = createCompletionItem(node, parent);
-            if (completionItem) {
-                selfCompletionItems.push(completionItem);
-            }
-        }
-    }
-}
-
-function createCompletionItem(node, parent) {
-    var completionItem = null;
-    var kind = CompletionItemKind.Field;
-    var label = node.property.name;
-    var insertText = label;
-    if (processedLabels.indexOf(label) === -1) {
-        processedLabels.push(label);
-        completionItem = new CompletionItem(label);
+    if (node.computed === false && node.property.type === IDENTIFIER && isThisOrThisAlias(node)) {
+        var label = node.property.name;
+        var kind = resolveTypeOfProperty(label);
+        var insertText = label;
         if (parent.type === MEMBER_EXPRESSION) {
             kind = resolveTypeOfProperty(label);
         } else if (parent.type === CALL_EXPRESSION) {
@@ -115,10 +117,8 @@ function createCompletionItem(node, parent) {
                 kind = resolveTypeOfProperty(label);
             }
         }
-        completionItem.insertText = insertText;
-        completionItem.kind = kind;
+        addCompletionItem(label, kind, insertText);
     }
-    return completionItem;
 }
 
 function resolveTypeOfProperty(label) {
