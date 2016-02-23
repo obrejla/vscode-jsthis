@@ -22,9 +22,9 @@ var CALLABLE_SUFFIX = '()';
 
 var alsoThisVars = utils.getThisVarNames();
 var completionItems = [];
-var selfCompletionItems = [];
+var thisAliasCompletionItems = [];
 var processedLabels = [];
-var includeSelfItems = false;
+var includeThisAliasItems = false;
 
 function isPrototype(node) {
     return node.object.type === MEMBER_EXPRESSION && node.object.property.type === IDENTIFIER
@@ -68,14 +68,14 @@ function prepareCompletionItems(document) {
             }
         }
     });
-    if (includeSelfItems) {
-        completionItems = completionItems.concat(selfCompletionItems);
+    if (includeThisAliasItems) {
+        completionItems = completionItems.concat(thisAliasCompletionItems);
     }
 }
 
 function processVariableDeclarator(node) {
     if (node.id.type === IDENTIFIER && alsoThisVars.indexOf(node.id.name) !== -1) {
-        includeSelfItems = true;
+        includeThisAliasItems = true;
     }
 }
 
@@ -133,8 +133,8 @@ module.exports = {
     provideCompletionItems: function (document, position, cancellationToken) {
         alsoThisVars = utils.getThisVarNames();
         completionItems = [];
-        selfCompletionItems = [];
-        includeSelfItems = false;
+        thisAliasCompletionItems = [];
+        includeThisAliasItems = false;
         processedLabels = [];
 
         if (shouldComplete(document, position)) {
