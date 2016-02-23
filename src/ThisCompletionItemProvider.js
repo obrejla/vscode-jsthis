@@ -5,7 +5,6 @@ var vscode = require('vscode');
 var utils = require('./Utils');
 
 var CompletionItem = vscode.CompletionItem;
-var CompletionList = vscode.CompletionList;
 var CompletionItemKind = vscode.CompletionItemKind;
 var Range = vscode.Range;
 
